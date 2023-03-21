@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="Ponomarenko_N" content="width=device-width, initial-scale=1.0">
+    <title>Модуль 6 задание 3</title>
+</head>
+<body>
+  <h1>Задание 3</h1>
+  
+<div id = "chat">
+  
+  <div class = "container" 
+   <form>
+     <input type="text" id="input" placeholder="Здесь вводится текст сообщения">
+   </form> 
+     <button id="send-message">Отправить</button>
+     <button id="send-geo">Гео-локация</button>
+  </div>
+  
+  <div id="chat-pole">
+			</div>
+</div> 
+
+<style>
+ .container {
+ display: flex;
+} 
+#input {
+	border: 3px solid #4284e7;
+  padding: 5px 4px;
+	width: 50%;
+	margin-right: 10px;
+  font-size: 15px;
+	outline: none;
+  }
+#send-message {
+  padding: 10;
+  background-color: transparent;
+  border: none;
+  outline: none;
+  -webkit-tap-highlight-color: transparent;
+  box-shadow: none;
+  cursor: pointer;
+  margin-left: 10px;
+  padding: 15px 15px;
+  border-radius: 1px;
+  font-size: 12px;
+  line-height: 20px;
+  text-transform: uppercase;
+  color: white;
+  background: #315efb;
+  transition: 0.3s; 
+      }
+
+ #send-message:hover{
+ opacity: 0.7;
+ filter: alpha(opacity=50); ;
+}
+  
+ #send-geo {
+  padding: 10;
+  background-color: transparent;
+  border: none;
+  outline: none;
+  -webkit-tap-highlight-color: transparent;
+  box-shadow: none;
+  cursor: pointer;
+  margin-left: 10px;
+  padding: 15px 15px;
+  border-radius: 1px;
+  font-size: 12px;
+  line-height: 20px;
+  text-transform: uppercase;
+  color: white;
+  background: #315efb;
+  transition: 0.3s; 
+      } 
+  #send-geo:hover{
+ opacity: 0.7;
+ filter: alpha(opacity=50); ;
+}
+  #chat-pole {
+	overflow: auto;
+	border: 3px solid #4284e7;
+	padding: 5px;
+	margin-top: 10px;
+	height: 400px;
+}
+  
+ #input, #chat-pole, .send {
+    border: solid 4px #bad7ec;
+}
+  .send {
+    border-radius: 10px;
+    width: 55%;
+    padding: 5px;
+    margin-top: 10px;
+    font-weight: bold;
+    word-break: break-all;
+    color: #131313;
+}
+.out-send {
+    margin-left: 181px;
+}
+
+.in-send {
+    margin-left: 5px;
+}
+.href {
+    text-decoration: none;
+    color: #417fc1;
+}
+a.href:hover{
+    text-decoration: underline;
+}
+  </style>
+
+<script>
+const urlServer = 'wss://echo-ws-service.herokuapp.com';
+
+function contentLoaded() {
+const chat = document.getElementById("chat-pole");
+const input = document.querySelector("input");
+const btn = document.querySelector("#send-message");
+let websocket = new WebSocket(urlServer);
+  
+websocket.onopen = function() {
+  console.log("CONNECTED");
+        };
+
+websocket.onmessage = (event) => {
+chat.innerHTML += `<div class="send in-send">Ответ: ${event.data}</div>`   
+chat.scrollTop = chat.scrollHeight;
+        }
+        
+function sendMessage(text) {
+  if (input.value) {
+   websocket.send(input.value);
+   chat.innerHTML += `<div class="send out-send">Вы: ${input.value} </div>`
+   input.value === "";
+      }
+  else return;
+    input.value === "";
+      } 
+    
+function sendGeo(message) {
+  chat.innerHTML += `<div class="send out-send"> ${message} </div>`
+      }
+          
+btn.addEventListener("click", sendMessage);
+     
+//геолокация
+const btngeo = document.querySelector("#send-geo");
+
+// Функция, выводящая текст об ошибке
+const error = () => {
+let text = `<p>Невозможно получить ваше местоположение</p>`; 
+sendGeo(text); 
+}
+
+// Функция, срабатывающая при успешном получении геолокации
+const success = (position) => {
+const latitude  = position.coords.latitude;
+const longitude = position.coords.longitude; 
+const url = `https://www.openstreetmap.org/#map=18/${latitude}/${longitude}`;
+ let  text = `<a href="${url}" class="href" target="_blank">Гео-локация</a>`; 
+ sendGeo(text);  
+}
+
+btngeo.addEventListener('click', () => {
+  if (!navigator.geolocation) {
+    let text = `<p>Geolocation не поддерживается вашим браузером</p>`;
+    sendGeo(text); 
+  } else {
+   navigator.geolocation.getCurrentPosition(success, error);
+  }
+});
+  
+  }; 
+   document.addEventListener("DOMContentLoaded", contentLoaded);
+
+</script>
+
+</body>
+</html>
